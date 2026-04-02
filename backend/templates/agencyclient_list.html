@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Agencyclients | NexusAgency{% endblock %}
+{% block page_title %}Agencyclients{% endblock %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+  <form class="search-bar" method="get" style="flex:1;margin-bottom:0">
+    <input type="text" name="search" value="{{ search }}" placeholder="Search agencyclients...">
+    <select name="status" onchange="this.form.submit()">
+      <option value="">All Status</option>
+      <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+      <option value="prospect" {% if status_filter == 'prospect' %}selected{% endif %}>Prospect</option>
+      <option value="churned" {% if status_filter == 'churned' %}selected{% endif %}>Churned</option>
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+  </form>
+  <a href="/agencyclients/create/" class="btn btn-primary">+ New AgencyClient</a>
+</div>
+
+<div class="card">
+  {% if records %}
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Company</th><th>Email</th><th>Phone</th><th>Industry</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for r in records %}
+      <tr>
+        <td><a href="/agencyclients/{{ r.pk }}/edit/"><strong>{{ r.name }}</strong></a></td>
+        <td>{{ r.company|default:"-" }}</td>
+        <td style="color:var(--muted)">{{ r.email|default:"-" }}</td>
+        <td>{{ r.phone|default:"-" }}</td>
+        <td>{{ r.industry|default:"-" }}</td>
+        <td class="actions">
+          <a href="/agencyclients/{{ r.pk }}/edit/" class="btn btn-primary btn-sm">Edit</a>
+          <form method="post" action="/agencyclients/{{ r.pk }}/delete/" style="display:inline" onsubmit="return confirm('Delete?')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">Del</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty">
+    <p>No agencyclients found.</p>
+    <a href="/agencyclients/create/" class="btn btn-primary" style="margin-top:1rem">Create AgencyClient</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
