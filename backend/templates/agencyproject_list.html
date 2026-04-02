@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Agencyprojects | NexusAgency{% endblock %}
+{% block page_title %}Agencyprojects{% endblock %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+  <form class="search-bar" method="get" style="flex:1;margin-bottom:0">
+    <input type="text" name="search" value="{{ search }}" placeholder="Search agencyprojects...">
+    <select name="status" onchange="this.form.submit()">
+      <option value="">All Project Type</option>
+      <option value="branding" {% if status_filter == 'branding' %}selected{% endif %}>Branding</option>
+      <option value="web_design" {% if status_filter == 'web_design' %}selected{% endif %}>Web Design</option>
+      <option value="seo" {% if status_filter == 'seo' %}selected{% endif %}>SEO</option>
+      <option value="social_media" {% if status_filter == 'social_media' %}selected{% endif %}>Social Media</option>
+      <option value="content" {% if status_filter == 'content' %}selected{% endif %}>Content</option>
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+  </form>
+  <a href="/agencyprojects/create/" class="btn btn-primary">+ New AgencyProject</a>
+</div>
+
+<div class="card">
+  {% if records %}
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Client Name</th><th>Project Type</th><th>Budget</th><th>Status</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for r in records %}
+      <tr>
+        <td><a href="/agencyprojects/{{ r.pk }}/edit/"><strong>{{ r.name }}</strong></a></td>
+        <td>{{ r.client_name|default:"-" }}</td>
+        <td><span class="badge badge-blue">{{ r.get_project_type_display }}</span></td>
+        <td>{{ r.budget|floatformat:2 }}</td>
+        <td><span class="badge badge-blue">{{ r.get_status_display }}</span></td>
+        <td class="actions">
+          <a href="/agencyprojects/{{ r.pk }}/edit/" class="btn btn-primary btn-sm">Edit</a>
+          <form method="post" action="/agencyprojects/{{ r.pk }}/delete/" style="display:inline" onsubmit="return confirm('Delete?')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">Del</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty">
+    <p>No agencyprojects found.</p>
+    <a href="/agencyprojects/create/" class="btn btn-primary" style="margin-top:1rem">Create AgencyProject</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
