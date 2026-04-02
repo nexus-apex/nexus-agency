@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Agencycampaigns | NexusAgency{% endblock %}
+{% block page_title %}Agencycampaigns{% endblock %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+  <form class="search-bar" method="get" style="flex:1;margin-bottom:0">
+    <input type="text" name="search" value="{{ search }}" placeholder="Search agencycampaigns...">
+    <select name="status" onchange="this.form.submit()">
+      <option value="">All Platform</option>
+      <option value="google" {% if status_filter == 'google' %}selected{% endif %}>Google</option>
+      <option value="facebook" {% if status_filter == 'facebook' %}selected{% endif %}>Facebook</option>
+      <option value="instagram" {% if status_filter == 'instagram' %}selected{% endif %}>Instagram</option>
+      <option value="linkedin" {% if status_filter == 'linkedin' %}selected{% endif %}>LinkedIn</option>
+    </select>
+    <button type="submit" class="btn btn-primary btn-sm">Search</button>
+  </form>
+  <a href="/agencycampaigns/create/" class="btn btn-primary">+ New AgencyCampaign</a>
+</div>
+
+<div class="card">
+  {% if records %}
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Client Name</th><th>Platform</th><th>Budget</th><th>Spent</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+      {% for r in records %}
+      <tr>
+        <td><a href="/agencycampaigns/{{ r.pk }}/edit/"><strong>{{ r.name }}</strong></a></td>
+        <td>{{ r.client_name|default:"-" }}</td>
+        <td><span class="badge badge-blue">{{ r.get_platform_display }}</span></td>
+        <td>{{ r.budget|floatformat:2 }}</td>
+        <td>{{ r.spent|floatformat:2 }}</td>
+        <td class="actions">
+          <a href="/agencycampaigns/{{ r.pk }}/edit/" class="btn btn-primary btn-sm">Edit</a>
+          <form method="post" action="/agencycampaigns/{{ r.pk }}/delete/" style="display:inline" onsubmit="return confirm('Delete?')">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger btn-sm">Del</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty">
+    <p>No agencycampaigns found.</p>
+    <a href="/agencycampaigns/create/" class="btn btn-primary" style="margin-top:1rem">Create AgencyCampaign</a>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
